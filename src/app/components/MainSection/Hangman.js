@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react';
 import Image from "next/image";
 
@@ -9,12 +8,12 @@ const keyboardLayout = [
     ['z', 'x', 'c', 'v', 'b', 'n', 'm']
 ];
 
-const wordHints = {
-    seatbelt: 'This ensures safety in a vehicle.',
-    speedlimit: 'Follow this to avoid accidents.',
-    pedestriancrossing: 'Always yield to pedestrians.',
-    drivesober: 'Drive without any influence of alcohol.',
-    distractionfree: 'Stay focused on the road.'
+const wordData = {
+    seatbelt: { question: 'What ensures safety in a vehicle?', hint: 'This ensures safety in a vehicle.' },
+    speedlimit: { question: 'What should you follow to avoid accidents?', hint: 'Follow this to avoid accidents.' },
+    pedestriancrossing: { question: 'What should you always yield to?', hint: 'Always yield to pedestrians.' },
+    drivesober: { question: 'How should you drive to avoid alcohol influence?', hint: 'Drive without any influence of alcohol.' },
+    distractionfree: { question: 'What should you stay focused on?', hint: 'Stay focused on the road.' }
 };
 
 const HangmanGame = () => {
@@ -24,6 +23,7 @@ const HangmanGame = () => {
     const [winCount, setWinCount] = useState(0);
     const [loseCount, setLoseCount] = useState(0);
     const [hint, setHint] = useState('');
+    const [currentQuestion, setCurrentQuestion] = useState('');
 
     useEffect(() => {
         startNewGame();
@@ -44,8 +44,9 @@ const HangmanGame = () => {
             if (remainingAttempts === 1) {
                 handleLoss();
             } else {
-                const currentHint = wordHints[currentWord.toLowerCase()];
-                setHint(currentHint || 'Hint not available.');
+                const { question, hint } = wordData[currentWord.toLowerCase()];
+                setHint(hint || 'Hint not available.');
+                setCurrentQuestion(question || 'Question not available.');
             }
         }
     };
@@ -63,12 +64,12 @@ const HangmanGame = () => {
     };
 
     const startNewGame = () => {
-        const newWord = Object.keys(wordHints)[Math.floor(Math.random() * Object.keys(wordHints).length)];
-        console.log(newWord);
+        const newWord = Object.keys(wordData)[Math.floor(Math.random() * Object.keys(wordData).length)];
         setCurrentWord(newWord);
-        setGuessedWord('_'.repeat(newWord.length));
+        setGuessedWord('_ '.repeat(newWord.length));
         setRemainingAttempts(6);
         setHint('');
+        setCurrentQuestion(wordData[newWord.toLowerCase()].question);
     };
 
     return (
@@ -77,7 +78,8 @@ const HangmanGame = () => {
                 <Image src="/cross.jpg" alt="Company Logo" width={1500} height={500} />
             </div>
             <div className="text-3xl font-bold mb-4">Safety Test</div>
-            <div className="text-2xl mb-4">Current Word: {guessedWord}</div>
+            <div className="text-2xl mb-4">Question: {currentQuestion}</div>
+            <div className="text-2xl mb-4">Guess Word: {guessedWord}</div>
             {hint && <div className="text-lg bg-black text-white mb-4">{hint}</div>}
             <div className="text-xl mb-4">Remaining Attempts: {remainingAttempts}</div>
             <div className="flex flex-col gap-2">
